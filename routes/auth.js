@@ -7,7 +7,6 @@ const config = require('config')
 const User = require('../models/User');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 const auth = require('../middleware/auth');
-const res = require('express/lib/response');
 
 // @route   GET api/auth
 // @desc    Get logged in user

@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { ACTION_ADD_CONTACT, ACTION_CLEAR_CURRENT, ACTION_DELETE_CONTACT, ACTION_SET_CURRENT } from "../types";
+import { ACTION_ADD_CONTACT, ACTION_CLEAR_CURRENT, ACTION_DELETE_CONTACT, ACTION_EDIT_CONTACT, ACTION_SET_CURRENT } from "../types";
 import ContactsContext from './contactsContext'
 import contactsReducer from './contactsReducer'
 
@@ -50,6 +50,15 @@ const ContactsState = props => {
     })
   }
 
+  const editContact = contact => {
+    contact.id = uuidv4()
+
+    dispatch({
+      type: ACTION_EDIT_CONTACT,
+      payload: contact
+    })
+  }
+
   const clearCurrent = () => {
     dispatch({
       type: ACTION_CLEAR_CURRENT
@@ -70,6 +79,7 @@ const ContactsState = props => {
         current: state.current,
 
         addContact,
+        editContact,
         deleteContact,
         clearCurrent,
         setCurrent

@@ -1,4 +1,4 @@
-import { ACTION_ADD_CONTACT, ACTION_CLEAR_CURRENT, ACTION_DELETE_CONTACT, ACTION_SET_CURRENT } from "../types";
+import { ACTION_ADD_CONTACT, ACTION_CLEAR_CURRENT, ACTION_DELETE_CONTACT, ACTION_EDIT_CONTACT, ACTION_SET_CURRENT } from "../types";
 
 const contactsReducer = (state, action) => {
   switch (action.type) {
@@ -6,6 +6,13 @@ const contactsReducer = (state, action) => {
       return {
         ...state,
         contacts: [...state.contacts, action.payload]
+      }
+
+    case ACTION_EDIT_CONTACT:
+      return {
+        ...state,
+        contacts: state.contacts
+          .map(item => item.id === action.payload.id ? action.payload : item)
       }
 
     case ACTION_DELETE_CONTACT:

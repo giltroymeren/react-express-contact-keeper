@@ -1,4 +1,5 @@
 const express = require('express')
+const connectDB = require('./config/db')
 
 const PORT = process.env.PORT || 2121
 const app = express()
@@ -11,6 +12,9 @@ app.get('', (req, res) => {
     message: 'Hiii'
   })
 })
+
+// Database
+connectDB()
 
 // Routes
 app.use('/api/users', require('./routes/users'))

@@ -3,6 +3,8 @@ const res = require('express/lib/response')
 const { append } = require('express/lib/response')
 const router = express.Router()
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken')
+const config = require('config')
 
 const User = require('../models/User');
 const bcrypt = require('bcryptjs/dist/bcrypt');
@@ -22,12 +24,12 @@ router.post('/',
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() })
     }
-    
+
     const { name, email, password } = request.body
     try {
       let user = await User.findOne({ email })
 
-      if(user) {
+      if (user) {
         return response.status(400).json({ msg: 'Email already taken' })
       }
 
@@ -43,6 +45,20 @@ router.post('/',
       await user.save()
 
       response.send(`${email} registered!`)
+
+      const payload = {
+        user: {
+          id: user.id
+        }
+      }
+
+      jwt.sign(payload,
+        config.get('jwtToken'),
+        { expiresIn: 36000 },
+        (error, token) => {
+          if (error) throw error
+          response.json(token)
+        })
     } catch (error) {
       console.error(error.message)
       return response.status(500).send('Server error occurred')

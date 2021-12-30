@@ -27,9 +27,34 @@ router.get('/', auth,
 // @route   POST api/contacts
 // @desc    Add new contact
 // @access  Private
-router.post('/', (request, response) => {
-  response.send('Add new contact')
-})
+router.post('/',
+  [
+    auth,
+    body('name', 'Enter a name').not().isEmpty(),
+  ],
+  async (request, response) => {
+    const errors = validationResult(request)
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() })
+    }
+
+    const { name, email, phone, type } = request.body
+    try {
+      const newContact = new Contacts({
+        name,
+        email,
+        phone,
+        type,
+        user: request.user.id
+      })
+
+      const contact = await newContact.save()
+      response.json(contact)
+    } catch (error) {
+      console.error(error.message)
+      return response.status(500).send('Server error occurred')
+    }
+  })
 
 // @route   PUT api/contacts/:id
 // @desc    Update a contact

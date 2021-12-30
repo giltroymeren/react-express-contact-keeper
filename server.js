@@ -1,6 +1,6 @@
-const express = require('express')
 const connectDB = require('./config/db')
 
+const express = require('express')
 const PORT = process.env.PORT || 2121
 const app = express()
 app.listen(PORT, () => {
@@ -15,6 +15,9 @@ app.get('', (req, res) => {
 
 // Database
 connectDB()
+
+// Initialize middleware
+app.use(express.json({ extended: false }))
 
 // Routes
 app.use('/api/users', require('./routes/users'))

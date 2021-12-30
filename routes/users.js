@@ -1,11 +1,9 @@
 const express = require('express')
-const res = require('express/lib/response')
 const { append } = require('express/lib/response')
 const router = express.Router()
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
 const config = require('config')
-
 const User = require('../models/User');
 const bcrypt = require('bcryptjs/dist/bcrypt');
 
@@ -28,7 +26,6 @@ router.post('/',
     const { name, email, password } = request.body
     try {
       let user = await User.findOne({ email })
-
       if (user) {
         return response.status(400).json({ msg: 'Email already taken' })
       }
@@ -44,7 +41,7 @@ router.post('/',
 
       await user.save()
 
-      response.send(`${email} registered!`)
+      // response.send(`${email} registered!`)
 
       const payload = {
         user: {
@@ -57,7 +54,7 @@ router.post('/',
         { expiresIn: 36000 },
         (error, token) => {
           if (error) throw error
-          response.json(token)
+          response.json({ token })
         })
     } catch (error) {
       console.error(error.message)

@@ -6,13 +6,22 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 const User = require('../models/User');
 const bcrypt = require('bcryptjs/dist/bcrypt');
+const auth = require('../middleware/auth');
+const res = require('express/lib/response');
 
 // @route   GET api/auth
 // @desc    Get logged in user
 // @access  Private
-router.get('/', (request, response) => {
-  response.send('Get logged in users')
-})
+router.get('/', auth,
+  async (request, response) => {
+    try {
+      const user = await User.findById(request.user.id).select('-password')
+      response.json(user)
+    } catch (error) {
+      console.error(error.message)
+      return response.status(500).send(`Server error occurred: ${error.message}`)
+    }
+  })
 
 // @route   POST api/auth
 // @desc    Auth user & get token
@@ -53,7 +62,6 @@ router.post('/',
           if (error) throw error
           response.json({ token })
         })
-      response.send('Log in user')
     } catch (error) {
       console.error(error.message)
       return response.status(500).send(`Server error occurred: ${error.message}`)

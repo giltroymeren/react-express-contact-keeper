@@ -59,9 +59,39 @@ router.post('/',
 // @route   PUT api/contacts/:id
 // @desc    Update a contact
 // @access  Private
-router.put('/:id', (request, response) => {
-  response.send('Update contact')
-})
+router.put('/:id', auth,
+  async (request, response) => {
+    const { name, email, phone, type } = request.body
+
+    // Build Contacts object
+    const newContact = {}
+    if (name) newContact.name = name
+    if (email) newContact.email = email
+    if (phone) newContact.phone = phone
+    if (type) newContact.type = type
+
+    try {
+      let contact = await Contacts.findById(request.params.id)
+      if (!contact) {
+        return response.status(404).json({ msg: `Contact not found` })
+      }
+
+      // Auth User-Contact ownership
+      if (contact.user.toString() !== request.user.id) {
+        return response.status(401).json({ msg: `Operation not authorized` })
+      }
+
+      contact = await Contacts.findByIdAndUpdate(request.params.id,
+        { $set: newContact },
+        { new: true }
+      )
+
+      response.json(contact)
+    } catch (error) {
+      console.error(error.message)
+      return response.status(500).send(`Server error occurred: ${error.message}`)
+    }
+  })
 
 // @route   PUT api/contacts/:id
 // @desc    Delete a contact
